@@ -87,7 +87,7 @@ def is_string_really_nice(str)
 
     contains_repeat_letter = true if str[i] == str[i + 2] && str[i] != str[i + 1]
 
-    if (!rest.nil? && rest.include?(pair) && !substring_in_remainder)
+    if (!rest.nil? && rest.include?(pair))
       substring_in_remainder = true
     end
   end
