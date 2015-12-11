@@ -15,38 +15,40 @@ TESTS_PART_ONE = [
 
 require 'matrix'
 
-
 class Matrix
   def []=(i, j, x)
     @rows[i][j] = x
   end
 end
 
-def execute_command(grid, command)
+def execute_command(grid, command, brightness = false)
   cmd = /[a-z]* ?[a-z]*/.match(command).to_s.strip
-  from, to = command.scan(/\d+,\d+/).map { |e| e.split(',').map(&:to_i) }
+  from, to = command.scan(/\d+,\d+/).map { |coord| coord.split(',').map(&:to_i) }
 
-  lights_lit = 0
-
-  (from[0]..to[0]).each do |i|
-    (from[1]..to[1]).each do |j|
+  x1, x2 = from[0], to[0]
+  y1, y2 = from[1], to[1]
+  (x1..x2).each do |i|
+    (y1..y2).each do |j|
       case cmd
       when 'turn on'
-        grid[i, j] = 1
-        lights_lit += 1
+        grid[i, j] = 1 unless brightness
+        grid[i, j] += 1 if brightness
       when 'turn off'
-        grid[i, j] = 0
+        grid[i, j] = 0 unless brightness
+        grid[i, j] -= 1 if brightness && grid[i, j] > 0
       when 'toggle'
         is_on = grid[i, j] > 0
-        grid[i, j] = 1 if !is_on
-        grid[i, j] = 0 if is_on
+        grid[i, j] = 1 if !is_on && !brightness
+        grid[i, j] = 0 if is_on && !brightness
+
+        grid[i, j] += 2 if brightness
       end
     end
   end
 end
 
-def execute_commands(grid, commands)
-  commands.each { |cmd| execute_command(grid, cmd) }
+def execute_commands(grid, commands, brightness = false)
+  commands.each { |cmd| execute_command(grid, cmd, brightness) }
 
   return grid
 end
@@ -76,3 +78,29 @@ grid = Matrix.zero($size)
 lit_lights = count_lights(execute_commands(grid, commands))
 
 puts "Lights lit: #{lit_lights}"
+
+TESTS_PART_TWO = [
+  {
+    assertion: 'turn on 0,0 through 0,0 would increase the total brightness by 1.',
+    commands: ['turn on 0,0 through 0,0'],
+    brightness: 1
+  },
+  {
+    assertion: 'toggle 0,0 through 999,999 would increase the total brightness by 2000000',
+    commands: ['toggle 0,0 through 999,999'],
+    brightness: 2000000
+  }
+]
+
+TESTS_PART_TWO.each do |test|
+  grid = Matrix.zero($size)
+  grid_after_commands = execute_commands(grid, test[:commands], true)
+  brightness = count_lights(grid_after_commands)
+  fail test[:assertion] unless (brightness == test[:brightness])
+end
+
+
+grid = Matrix.zero($size)
+brightness = count_lights(execute_commands(grid, commands, true))
+
+puts "Brightness: #{brightness}"
