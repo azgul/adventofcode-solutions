@@ -14,7 +14,7 @@ TESTS_PART_ONE = [
   }
 ]
 
-def travelling_santa(distances)
+def travelling_santa(distances, shortest = true)
   distance_map = {}
 
   distances.each do |d|
@@ -32,7 +32,7 @@ def travelling_santa(distances)
   paths = distance_map.keys.permutation.to_a
 
   best_route = ''
-  best_distance = 999999
+  best_distance = shortest ? 999999 : 0
 
   paths.each do |path|
     distance = 0
@@ -40,7 +40,7 @@ def travelling_santa(distances)
       distance += distance_map[path[i]][path[i+1]]
     end
 
-    if distance < best_distance
+    if shortest ? distance < best_distance : distance > best_distance
       best_route = "#{path.join(' -> ')} = #{distance}"
       best_distance = distance
     end
@@ -55,3 +55,20 @@ input = File.readlines('input')
 
 best_candidate = travelling_santa(input)
 puts "Shortest route: #{best_candidate[:route]}"
+
+TESTS_PART_TWO = [
+  {
+    assertion: 'For example, given the distances above, the longest route would be 982 via (for example) Dublin -> London -> Belfast.',
+    distances: [
+      'London to Dublin = 464',
+      'London to Belfast = 518',
+      'Dublin to Belfast = 141'
+    ],
+    longest: 982
+  }
+]
+
+TESTS_PART_TWO.each { |test| fail test[:assertion] unless travelling_santa(test[:distances], false)[:distance] == test[:longest] }
+
+best_candidate = travelling_santa(input, false)
+puts "Longest route: #{best_candidate[:route]}"
