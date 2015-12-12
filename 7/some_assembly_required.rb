@@ -107,7 +107,12 @@ end
 TESTS_PART_ONE.each { |test| fail test[:assertion] unless evaluate_circuit(test[:circuit]) == test[:signals] }
 
 circuit = File.readlines('input').each { |line| line.chomp! }
-
 signals = evaluate_circuit(circuit)
 
 puts "The signal on wire a: #{signals["a"]}"
+
+
+circuit = File.readlines('input.two').each { |line| line.chomp! }
+signals = evaluate_circuit(circuit)
+
+puts "The new signal on wire a: #{signals["a"]}"
