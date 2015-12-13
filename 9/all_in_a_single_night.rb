@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'awesome_print'
-
 TESTS_PART_ONE = [
   {
     assertion: 'The shortest of these is London -> Dublin -> Belfast = 605, and so the answer is 605 in this example.',
